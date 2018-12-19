@@ -7,47 +7,47 @@ pygame.init()
 win = pygame.display.set_mode((450, 280))
 pygame.display.set_caption("Zombie Gan")
 clock = pygame.time.Clock()
-damageGG = [pygame.image.load('damageGG_left.png'),
-            pygame.image.load('damageGG_right.png')]
-Bg = pygame.image.load('bg.png')
-Main_menu = pygame.image.load('main menu.png')
-Main_menu1 = pygame.image.load('main menu1.png')
-Main_menu2 = pygame.image.load('main menu2.png')
-Main_menu3 = pygame.image.load('main menu3.png')
-Gift = pygame.image.load('gift.png')
-stand = [pygame.image.load('gg_lift1.png'),
-         pygame.image.load('gg_right1.png')]
-Shooting = [pygame.image.load('shooting_left.png'),
-            pygame.image.load('shooting_right.png')]
-Death_left = [pygame.image.load('death_left1.png'),
-              pygame.image.load('death_left2.png'),
-              pygame.image.load('death_left3.png'),
-              pygame.image.load('death_left4.png')]
-ggRight = [pygame.image.load('gg_right1.png'),
-           pygame.image.load('gg_right2.png'),
-           pygame.image.load('gg_right3.png'),
-           pygame.image.load('gg_right4.png')]
+damageGG = [pygame.image.load('image/damageGG_left.png'),
+            pygame.image.load('image/damageGG_right.png')]
+Bg = pygame.image.load('image/bg.png')
+Main_menu = pygame.image.load('image/main menu.png')
+Main_menu1 = pygame.image.load('image/main menu1.png')
+Main_menu2 = pygame.image.load('image/main menu2.png')
+Main_menu3 = pygame.image.load('image/main menu3.png')
+Gift = pygame.image.load('image/gift.png')
+stand = [pygame.image.load('image/gg_lift1.png'),
+         pygame.image.load('image/gg_right1.png')]
+Shooting = [pygame.image.load('image/shooting_left.png'),
+            pygame.image.load('image/shooting_right.png')]
+Death_left = [pygame.image.load('image/death_left1.png'),
+              pygame.image.load('image/death_left2.png'),
+              pygame.image.load('image/death_left3.png'),
+              pygame.image.load('image/death_left4.png')]
+ggRight = [pygame.image.load('image/gg_right1.png'),
+           pygame.image.load('image/gg_right2.png'),
+           pygame.image.load('image/gg_right3.png'),
+           pygame.image.load('image/gg_right4.png')]
 
-ggLift = [pygame.image.load('gg_lift1.png'),
-          pygame.image.load('gg_lift2.png'),
-          pygame.image.load('gg_lift3.png'),
-          pygame.image.load('gg_lift4.png')]
+ggLift = [pygame.image.load('image/gg_lift1.png'),
+          pygame.image.load('image/gg_lift2.png'),
+          pygame.image.load('image/gg_lift3.png'),
+          pygame.image.load('image/gg_lift4.png')]
 
-Zombie_lvl1 = [pygame.image.load('zombie1.png'),
-               pygame.image.load('zombie2.png'),
-               pygame.image.load('zombie3.png')]
-Zombie_lvl2 = [pygame.image.load('zombie1_lvl2.png'),
-               pygame.image.load('zombie2_lvl2.png'),
-               pygame.image.load('zombie3_lvl2.png'),
-               pygame.image.load('zombie4_lvl2.png'),
-               pygame.image.load('zombie5_lvl2.png')]
+Zombie_lvl1 = [pygame.image.load('image/zombie1.png'),
+               pygame.image.load('image/zombie2.png'),
+               pygame.image.load('image/zombie3.png')]
+Zombie_lvl2 = [pygame.image.load('image/zombie1_lvl2.png'),
+               pygame.image.load('image/zombie2_lvl2.png'),
+               pygame.image.load('image/zombie3_lvl2.png'),
+               pygame.image.load('image/zombie4_lvl2.png'),
+               pygame.image.load('image/zombie5_lvl2.png')]
 
-Skeleton_left = [pygame.image.load('skeleton1.png'),
-                 pygame.image.load('skeleton2.png'),
-                 pygame.image.load('skeleton3.png')]
-Coin = pygame.image.load('money.png')
-Coin1 = pygame.image.load('money1.png')
-Skull = pygame.image.load('skull.png')
+Skeleton_left = [pygame.image.load('image/skeleton1.png'),
+                 pygame.image.load('image/skeleton2.png'),
+                 pygame.image.load('image/skeleton3.png')]
+Coin = pygame.image.load('image/money.png')
+Coin1 = pygame.image.load('image/money1.png')
+Skull = pygame.image.load('image/skull.png')
 x = 226
 y = 210
 width = 40
@@ -76,7 +76,7 @@ A = random.randrange(1, 4)
 But1 = pygame.draw.rect(win, (0, 0, 0), (135, 60, 180, 18))
 
 
-class Shot():
+class Shot:
     def __init__(self, shot_x, shot_y, radius, color, facing):
         self.shot_x = shot_x
         self.shot_y = shot_y
@@ -89,7 +89,7 @@ class Shot():
         pygame.draw.circle(win, self.color, (self.shot_x, self.shot_y), self.radius)
 
 
-class Skeleton():
+class Skeleton:
     def __init__(self, skeleton_x, skeleton_y, xp, width, height):
         self.skeleton_x = skeleton_x
         self.skeleton_y = skeleton_y
@@ -105,7 +105,7 @@ class Skeleton():
         win.blit(Skeleton_left[anim2 // 10], (self.skeleton_x, self.skeleton_y))
 
 
-class Zombie():
+class Zombie:
     def __init__(self, zombie_x, zombie_y, xp, width, height, level):
         self.zombie_x = zombie_x
         self.zombie_y = zombie_y
