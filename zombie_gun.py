@@ -1,12 +1,22 @@
 import pygame
 import random
-
-from vars import Skeleton_left, Zombie_lvl2, Zombie_lvl1, MAIN_MENU, MAIN_MENU_START_GAME, BG, Skull, Coin1, ggLift, \
-    ggRight, \
-    SHOOTING, DAMAGE_GG, STAND_GG, Gift, Coin
+from vars import SKELETON_LEFT
+from vars import ZOMBIE_LVL_2
+from vars import ZOMBIE_LVL_1
+from vars import MAIN_MENU
+from vars import MAIN_MENU_START_GAME
+from vars import BG
+from vars import SKULL
+from vars import COIN_1
+from vars import GG_LEFT
+from vars import GG_RIGHT
+from vars import SHOOTING
+from vars import DAMAGE_GG
+from vars import STAND_GG
+from vars import GIFT
+from vars import COIN
 
 pygame.init()
-
 win = pygame.display.set_mode((450, 280))
 pygame.display.set_caption("Zombie Gan")
 clock = pygame.time.Clock()
@@ -52,62 +62,49 @@ class Shot:
         pygame.draw.circle(win, self.color, (self.shot_x, self.shot_y), self.radius)
 
 
-class Skeleton:
-    def __init__(self, skeleton_x, skeleton_y, xp, width, height):
-        self.skeleton_x = skeleton_x
-        self.skeleton_y = skeleton_y
+class Monster:
+    def __init__(self, x, y, xp, width, height):
+        self.x = x
+        self.y = y
         self.xp = xp
         self.width = width
         self.height = height
 
-    def draw(self):
-        global anim2
-        if anim2 + 1 >= 30:
-            anim2 = 0
-        pygame.draw.rect(win, (255, 0, 0), (self.skeleton_x - 15, self.skeleton_y, self.width, self.height))
-        win.blit(Skeleton_left[anim2 // 10], (self.skeleton_x, self.skeleton_y))
+
+class Skeleton(Monster):
+    def draw(self, anim, fps, fps_1):
+        if anim + 1 >= fps:
+            anim = 0
+        pygame.draw.rect(win, (255, 0, 0), (self.x - 15, self.y, self.width, self.height))
+        win.blit(SKELETON_LEFT[anim // fps_1], (self.x, self.y))
 
 
-class Zombie:
-    def __init__(self, zombie_x, zombie_y, xp, width, height, level):
-        self.zombie_x = zombie_x
-        self.zombie_y = zombie_y
-        self.xp = xp
-        self.width = width
-        self.height = height
-        self.level = level
-
-    def draw(self):
-        global anim1
-        if anim1 + 1 >= 60:
-            anim1 = 0
-
-        if lvl2:
-            pygame.draw.rect(win, (255, 0, 0), (self.zombie_x + 5, self.zombie_y, self.width, self.height))
-            win.blit(Zombie_lvl2[anim1 // 12], (self.zombie_x, self.zombie_y))
-        else:
-            pygame.draw.rect(win, (255, 0, 0), (self.zombie_x, self.zombie_y, self.width, self.height))
-            win.blit(Zombie_lvl1[anim1 // 20], (self.zombie_x, self.zombie_y))
-        fontObj = pygame.font.Font('freesansbold.ttf', 15)
-        textSurfaceObj = fontObj.render('lvl' + str(self.level), True, (128, 128, 128))
-        textRectObj = textSurfaceObj.get_rect()
-        textRectObj.center = (self.zombie_x + 23, self.zombie_y - 15)
-        win.blit(textSurfaceObj, textRectObj)
+class Zombie(Monster):
+    def draw(self, anim, fps, fps_1):
+        if anim + 1 >= fps:
+            anim = 0
+        pygame.draw.rect(win, (255, 0, 0), (self.x + 5, self.y, self.width, self.height))
+        win.blit(ZOMBIE_LVL_1[anim // fps_1], (self.x, self.y))
+        # fontObj = pygame.font.Font('freesansbold.ttf', 15)
+        # textSurfaceObj = fontObj.render('lvl' + str(level), True, (128, 128, 128))
+        # textRectObj = textSurfaceObj.get_rect()
+        # textRectObj.center = (self.x + 23, self.y - 15)
+        # win.blit(textSurfaceObj, textRectObj)
 
 
 def draw_window():
     global anim, anim1, k, anim2, death_zombie, coin_x, coin_y
     win.blit(BG, (0, 0))
-    win.blit(Skull, (0, 0))
-    win.blit(Coin1, (60, 0))
+    win.blit(SKULL, (0, 0))
+    win.blit(COIN_1, (60, 0))
     if anim + 1 >= 32:
         anim = 0
     if left:
-        win.blit(ggLift[anim // 8], (x, y))
+        win.blit(GG_LEFT[anim // 8], (x, y))
         anim += 1
 
     elif right:
-        win.blit(ggRight[anim // 8], (x, y))
+        win.blit(GG_RIGHT[anim // 8], (x, y))
         anim += 1
 
     elif shooting:
@@ -127,18 +124,18 @@ def draw_window():
         else:
             win.blit(STAND_GG[1], (x, y))
     if gift:
-        win.blit(Gift, (gift_x, gift_y))
+        win.blit(GIFT, (gift_x, gift_y))
     if coin:
-        win.blit(Coin, (coin_x, coin_y))
+        win.blit(COIN, (coin_x, coin_y))
 
     pygame.draw.rect(win, (255, 0, 0), (x, y, width, 3))
     for zombie in zombies:
-        zombie.draw()
+        zombie.draw(anim1, 30, 20)
         anim1 += 1
     for shot in shots:
         shot.draw_shot()
     for skeleton in skeletons:
-        skeleton.draw()
+        skeleton.draw(anim2, 60, 20)
         anim2 += 1
 
     fontObj = pygame.font.Font('freesansbold.ttf', 20)
@@ -216,51 +213,51 @@ while run:
             else:
                 shots.pop(shots.index(shot))
         for zombie in zombies:
-            if zombie.zombie_x < 450:
-                zombie.zombie_x += 1
+            if zombie.x < 450:
+                zombie.x += 1
             else:
                 zombies.pop(zombies.index(zombie))
             if lvl2:
-                if zombie.zombie_x == 80:
-                    zombies.append(Zombie(round(x1), round(187), 250, 60, 3, 2))
+                if zombie.x == 80:
+                    zombies.append(Zombie(round(x1), round(187), 250, 60, 3))
             else:
-                if zombie.zombie_x == 100:
-                    zombies.append(Zombie(round(x1), round(200), 100, 40, 3, 1))
+                if zombie.x == 100:
+                    zombies.append(Zombie(round(x1), round(200), 100, 40, 3))
             if lvl2:
-                if zombie.zombie_x == x:
+                if zombie.x == x:
                     damage = True
                     if width > 0:
                         GG_xp -= 50
                         width -= 20
                         print(GG_xp)
             else:
-                if zombie.zombie_x == x:
+                if zombie.x == x:
                     damage = True
                     if width > 0:
                         GG_xp -= 25
                         width -= 10
                         print(GG_xp)
-            if zombie.zombie_x == x + 10 or zombie.zombie_x == x + 9 or zombie.zombie_x == x + 8:
+            if zombie.x == x + 10 or zombie.x == x + 9 or zombie.x == x + 8:
                 damage = False
             if width == 0 and GG_xp <= 0:
                 pygame.mixer.music.stop()
                 start_game = False
 
         for skeleton in skeletons:
-            if skeleton.skeleton_x > 1:
-                skeleton.skeleton_x -= 1
+            if skeleton.x > 1:
+                skeleton.x -= 1
             else:
                 skeletons.pop(skeletons.index(skeleton))
-            if skeleton.skeleton_x == 250:
+            if skeleton.x == 250:
                 skeletons.append(Skeleton(round(470), round(195), 200, 80, 3))
-            if skeleton.skeleton_x == x + 10:
+            if skeleton.x == x + 10:
                 damage = True
                 if width > 0:
                     GG_xp -= 50
                     width -= 20
                     print(GG_xp)
 
-            if skeleton.skeleton_x == x or skeleton.skeleton_x == x - 1 or skeleton.skeleton_x == x - 2:
+            if skeleton.x == x or skeleton.x == x - 1 or skeleton.x == x - 2:
                 damage = False
             if width <= 0 and GG_xp <= 0:
                 pygame.mixer.music.stop()
@@ -268,7 +265,7 @@ while run:
 
         for zombie in zombies:
             for shot in shots:
-                if zombie.zombie_x + 30 == shot.shot_x or zombie.zombie_x + 29 == shot.shot_x:
+                if zombie.x + 30 == shot.shot_x or zombie.x + 29 == shot.shot_x:
                     zombie.xp -= 50
                     shots.pop(shots.index(shot))
                     if zombie.width > 0:
@@ -285,7 +282,7 @@ while run:
 
         for skeleton in skeletons:
             for shot in shots:
-                if skeleton.skeleton_x == shot.shot_x or skeleton.skeleton_x + 1 == shot.shot_x:
+                if skeleton.x == shot.shot_x or skeleton.x + 1 == shot.shot_x:
                     skeleton.xp -= 50
                     shots.pop(shots.index(shot))
                     if skeleton.width > 0:
@@ -296,7 +293,7 @@ while run:
                 w += 1
 
         Z = a % 10
-        if Z == 9 and coin == False:
+        if Z == 9 and coin is False:
             if gift_y < -50:
                 gift_x = random.randrange(0, 400)
             gift = True
@@ -317,10 +314,10 @@ while run:
         if q >= 20:
             lvl2 = True
             if len(zombies) < 1:
-                zombies.append(Zombie(round(x1), round(187), 250, 60, 3, 2))
+                zombies.append(Zombie(round(x1), round(187), 250, 60, 3))
         else:
             if len(zombies) < 1:
-                zombies.append(Zombie(round(x1), round(200), 100, 40, 3, 1))
+                zombies.append(Zombie(round(x1), round(200), 100, 40, 3))
         if len(skeletons) < 1:
             skeletons.append(Skeleton(round(470), round(195), 200, 80, 3))
 
