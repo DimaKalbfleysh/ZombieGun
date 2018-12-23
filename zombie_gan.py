@@ -1,53 +1,16 @@
-import pygame  # окно проигрыша
-import time
+import pygame
 import random
+
+from vars import Skeleton_left, Zombie_lvl2, Zombie_lvl1, MAIN_MENU, MAIN_MENU_START_GAME, BG, Skull, Coin1, ggLift, \
+    ggRight, \
+    SHOOTING, DAMAGE_GG, STAND_GG, Gift, Coin
 
 pygame.init()
 
 win = pygame.display.set_mode((450, 280))
 pygame.display.set_caption("Zombie Gan")
 clock = pygame.time.Clock()
-damageGG = [pygame.image.load('image/damageGG_left.png'),
-            pygame.image.load('image/damageGG_right.png')]
-Bg = pygame.image.load('image/bg.png')
-Main_menu = pygame.image.load('image/main menu.png')
-Main_menu1 = pygame.image.load('image/main menu1.png')
-Main_menu2 = pygame.image.load('image/main menu2.png')
-Main_menu3 = pygame.image.load('image/main menu3.png')
-Gift = pygame.image.load('image/gift.png')
-stand = [pygame.image.load('image/gg_lift1.png'),
-         pygame.image.load('image/gg_right1.png')]
-Shooting = [pygame.image.load('image/shooting_left.png'),
-            pygame.image.load('image/shooting_right.png')]
-Death_left = [pygame.image.load('image/death_left1.png'),
-              pygame.image.load('image/death_left2.png'),
-              pygame.image.load('image/death_left3.png'),
-              pygame.image.load('image/death_left4.png')]
-ggRight = [pygame.image.load('image/gg_right1.png'),
-           pygame.image.load('image/gg_right2.png'),
-           pygame.image.load('image/gg_right3.png'),
-           pygame.image.load('image/gg_right4.png')]
 
-ggLift = [pygame.image.load('image/gg_lift1.png'),
-          pygame.image.load('image/gg_lift2.png'),
-          pygame.image.load('image/gg_lift3.png'),
-          pygame.image.load('image/gg_lift4.png')]
-
-Zombie_lvl1 = [pygame.image.load('image/zombie1.png'),
-               pygame.image.load('image/zombie2.png'),
-               pygame.image.load('image/zombie3.png')]
-Zombie_lvl2 = [pygame.image.load('image/zombie1_lvl2.png'),
-               pygame.image.load('image/zombie2_lvl2.png'),
-               pygame.image.load('image/zombie3_lvl2.png'),
-               pygame.image.load('image/zombie4_lvl2.png'),
-               pygame.image.load('image/zombie5_lvl2.png')]
-
-Skeleton_left = [pygame.image.load('image/skeleton1.png'),
-                 pygame.image.load('image/skeleton2.png'),
-                 pygame.image.load('image/skeleton3.png')]
-Coin = pygame.image.load('image/money.png')
-Coin1 = pygame.image.load('image/money1.png')
-Skull = pygame.image.load('image/skull.png')
 x = 226
 y = 210
 width = 40
@@ -85,7 +48,7 @@ class Shot:
         self.facing = facing
         self.vel = 1 * facing
 
-    def draw_shot(self, win):
+    def draw_shot(self):
         pygame.draw.circle(win, self.color, (self.shot_x, self.shot_y), self.radius)
 
 
@@ -97,7 +60,7 @@ class Skeleton:
         self.width = width
         self.height = height
 
-    def draw(self, win):
+    def draw(self):
         global anim2
         if anim2 + 1 >= 30:
             anim2 = 0
@@ -114,7 +77,7 @@ class Zombie:
         self.height = height
         self.level = level
 
-    def draw(self, win):
+    def draw(self):
         global anim1
         if anim1 + 1 >= 60:
             anim1 = 0
@@ -122,88 +85,81 @@ class Zombie:
         if lvl2:
             pygame.draw.rect(win, (255, 0, 0), (self.zombie_x + 5, self.zombie_y, self.width, self.height))
             win.blit(Zombie_lvl2[anim1 // 12], (self.zombie_x, self.zombie_y))
-            fontObj = pygame.font.Font('freesansbold.ttf', 15)
-            textSurfaceObj = fontObj.render('lvl' + str(self.level), True, (128, 128, 128))
-            textRectObj = textSurfaceObj.get_rect()
-            textRectObj.center = (self.zombie_x + 23, self.zombie_y - 15)
-            win.blit(textSurfaceObj, textRectObj)
         else:
             pygame.draw.rect(win, (255, 0, 0), (self.zombie_x, self.zombie_y, self.width, self.height))
             win.blit(Zombie_lvl1[anim1 // 20], (self.zombie_x, self.zombie_y))
-            fontObj = pygame.font.Font('freesansbold.ttf', 15)
-            textSurfaceObj = fontObj.render('lvl' + str(self.level), True, (128, 128, 128))
-            textRectObj = textSurfaceObj.get_rect()
-            textRectObj.center = (self.zombie_x + 23, self.zombie_y - 15)
-            win.blit(textSurfaceObj, textRectObj)
+        fontObj = pygame.font.Font('freesansbold.ttf', 15)
+        textSurfaceObj = fontObj.render('lvl' + str(self.level), True, (128, 128, 128))
+        textRectObj = textSurfaceObj.get_rect()
+        textRectObj.center = (self.zombie_x + 23, self.zombie_y - 15)
+        win.blit(textSurfaceObj, textRectObj)
 
 
 def draw_window():
-    global anim
-    global anim1
-    global k
-    global anim2
-    global death_zombie
-    global coin_x
-    global coin_y
-    win.blit(Main_menu, (0, 0))
-    if button1:
-        win.blit(Main_menu1, (0, 0))
-    if start_game:
-        win.blit(Bg, (0, 0))
-        win.blit(Skull, (0, 0))
-        win.blit(Coin1, (60, 0))
-        if anim + 1 >= 32:
-            anim = 0
-        if left:
-            win.blit(ggLift[anim // 8], (x, y))
-            anim += 1
+    global anim, anim1, k, anim2, death_zombie, coin_x, coin_y
+    win.blit(BG, (0, 0))
+    win.blit(Skull, (0, 0))
+    win.blit(Coin1, (60, 0))
+    if anim + 1 >= 32:
+        anim = 0
+    if left:
+        win.blit(ggLift[anim // 8], (x, y))
+        anim += 1
 
-        elif right:
-            win.blit(ggRight[anim // 8], (x, y))
-            anim += 1
+    elif right:
+        win.blit(ggRight[anim // 8], (x, y))
+        anim += 1
 
-        elif shooting:
-            if k == -1:
-                win.blit(Shooting[0], (x, y))
-            else:
-                win.blit(Shooting[1], (x, y))
-        elif damage:
-            if k == -1:
-                win.blit(damageGG[0], (x, y))
-            else:
-                win.blit(damageGG[1], (x, y))
-
+    elif shooting:
+        if k == -1:
+            win.blit(SHOOTING[0], (x, y))
         else:
-            if k == -1:
-                win.blit(stand[0], (x, y))
-            else:
-                win.blit(stand[1], (x, y))
-        if gift:
-            win.blit(Gift, (gift_x, gift_y))
-        if coin:
-            win.blit(Coin, (coin_x, coin_y))
+            win.blit(SHOOTING[1], (x, y))
+    elif damage:
+        if k == -1:
+            win.blit(DAMAGE_GG[0], (x, y))
+        else:
+            win.blit(DAMAGE_GG[1], (x, y))
 
-        pygame.draw.rect(win, (255, 0, 0), (x, y, width, 3))
-        for zombie in zombies:
-            zombie.draw(win)
-            anim1 += 1
-        for shot in shots:
-            shot.draw_shot(win)
-        for skeleton in skeletons:
-            skeleton.draw(win)
-            anim2 += 1
+    else:
+        if k == -1:
+            win.blit(STAND_GG[0], (x, y))
+        else:
+            win.blit(STAND_GG[1], (x, y))
+    if gift:
+        win.blit(Gift, (gift_x, gift_y))
+    if coin:
+        win.blit(Coin, (coin_x, coin_y))
 
-        fontObj = pygame.font.Font('freesansbold.ttf', 20)
-        textSurfaceObj = fontObj.render(str(a), True, (255, 0, 0))
-        textRectObj = textSurfaceObj.get_rect()
-        textRectObj.center = (40, 15)
-        win.blit(textSurfaceObj, textRectObj)
+    pygame.draw.rect(win, (255, 0, 0), (x, y, width, 3))
+    for zombie in zombies:
+        zombie.draw()
+        anim1 += 1
+    for shot in shots:
+        shot.draw_shot()
+    for skeleton in skeletons:
+        skeleton.draw()
+        anim2 += 1
 
-        fontObj = pygame.font.Font('freesansbold.ttf', 20)
-        textSurfaceObj = fontObj.render(str(money), True, (255, 0, 0))
-        textRectObj = textSurfaceObj.get_rect()
-        textRectObj.center = (100, 15)
-        win.blit(textSurfaceObj, textRectObj)
+    fontObj = pygame.font.Font('freesansbold.ttf', 20)
+    textSurfaceObj = fontObj.render(str(a), True, (255, 0, 0))
+    textRectObj = textSurfaceObj.get_rect()
+    textRectObj.center = (40, 15)
+    win.blit(textSurfaceObj, textRectObj)
+
+    fontObj = pygame.font.Font('freesansbold.ttf', 20)
+    textSurfaceObj = fontObj.render(str(money), True, (255, 0, 0))
+    textRectObj = textSurfaceObj.get_rect()
+    textRectObj.center = (100, 15)
+    win.blit(textSurfaceObj, textRectObj)
+
+
+def draw_game():
+    win.blit(MAIN_MENU, (0, 0))
+    if button1:
+        win.blit(MAIN_MENU_START_GAME, (0, 0))
+    if start_game:
+        draw_window()
     pygame.display.update()
 
 
@@ -400,5 +356,5 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-    draw_window()
+    draw_game()
 pygame.quit()
