@@ -1,48 +1,37 @@
 import pygame
 import random
-from vars import SKELETON_LEFT
-from vars import ZOMBIE_LVL_1
-from vars import MAIN_MENU
-from vars import MAIN_MENU_START_GAME
-from vars import BG
-from vars import SKULL
-from vars import COIN_1
-from vars import GG_LEFT
-from vars import GG_RIGHT
-from vars import SHOOTING
-from vars import DAMAGE_GG
-from vars import STAND_GG
-from vars import GIFT
-from vars import COIN
+from sprite import SKELETON_LEFT
+from sprite import ZOMBIE_LVL_1
+from sprite import MAIN_MENU
+from sprite import MAIN_MENU_START_GAME
+from sprite import BG
+from sprite import SKULL
+from sprite import COIN_1
+from sprite import GG_LEFT
+from sprite import GG_RIGHT
+from sprite import SHOOTING
+from sprite import DAMAGE_GG
+from sprite import STAND_GG
+from sprite import GIFT
+from sprite import COIN
+from vars import y
+from vars import x1
+from vars import x
+from vars import start_game
+from vars import width
+from vars import GG_xp
+from vars import coin
+from vars import gift
+from vars import k
+from vars import speed
+from vars import animation_gg
+from vars import animation_zombie
+from vars import animation_skeleton
 
 pygame.init()
 win = pygame.display.set_mode((450, 280))
-pygame.display.set_caption("Zombie Gan")
+pygame.display.set_caption("Zombie Gun")
 clock = pygame.time.Clock()
-
-x = 226
-y = 210
-width = 40
-GG_xp = 100
-animation_zombie = 0
-animation_skeleton = 0
-animation_gg = 0
-x1 = -20
-speed = 2
-left = False
-right = False
-shooting = False
-damage = False
-death = False
-button1 = False
-start_game = False
-lvl2 = False
-gift = False
-coin = False
-k = -1
-total_killed = 0
-zobmie_killed = 0
-skeletons_killed = 0
 But1 = pygame.draw.rect(win, (0, 0, 0), (135, 60, 180, 18))
 
 
@@ -184,6 +173,12 @@ def killing_monsters(monsters, shots, damage, *args):
             zobmie_killed += 1
 
 
+def start_music():
+    pygame.mixer.init()
+    pygame.mixer.music.load("documents/XXXTentacion - Look at Me (minus).mp3")
+    pygame.mixer.music.play(-1)
+
+
 while run:
     clock.tick(120)
     pos = pygame.mouse.get_pos()
@@ -211,9 +206,7 @@ while run:
         skeletons_killed = 0
         gift_x = random.randrange(0, 400)
         gift_y = 0
-        pygame.mixer.init()
-        pygame.mixer.music.load("documents/XXXTentacion - Look at Me (minus).mp3")
-        pygame.mixer.music.play(-1)
+        start_music()
         coin_x = gift_x + 25
         coin_y = gift_y + 30
         money = 0
@@ -224,6 +217,7 @@ while run:
                 shot.shot_x += shot.vel
             else:
                 shots.pop(shots.index(shot))
+
         for zombie in zombies:
             if zombie.x < 450:
                 zombie.x += 1
@@ -234,9 +228,8 @@ while run:
                 zombies.append(Zombie)
             if zombie.x == x:
                 damage = True
-                if width > 0:
-                    GG_xp -= 25
-                    width -= 10
+                GG_xp -= 25
+                width -= 10
             if zombie.x == x + 10 or zombie.x == x + 9 or zombie.x == x + 8:
                 damage = False
             if width == 0 and GG_xp <= 0:
@@ -255,12 +248,12 @@ while run:
                 damage = True
                 GG_xp -= 50
                 width -= 20
-
             if skeleton.x == x or skeleton.x == x - 1 or skeleton.x == x - 2:
                 damage = False
             if width <= 0 and GG_xp <= 0:
                 pygame.mixer.music.stop()
                 start_game = False
+
         killing_monsters(zombies, shots, 20, 30, 29)
         killing_monsters(skeletons, shots, 25, 0, 1)
 
