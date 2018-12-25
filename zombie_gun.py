@@ -44,7 +44,7 @@ class Shot:
         self.facing = facing
         self.vel = 1 * facing
 
-    def draw_shot(self):
+    def draw(self):
         pygame.draw.circle(win, self.color, (self.shot_x, self.shot_y), self.radius)
 
 
@@ -57,7 +57,7 @@ class Monster:
         self.height = height
 
     def draw(self, animation, fps, sprites):
-        pygame.draw.rect(win, (255, 0, 0), (self.x - 15, self.y, self.width, self.height))
+        pygame.draw.rect(win, (0, 0, 255), (self.x - 15, self.y, self.width, self.height))
         win.blit(sprites[animation // fps], (self.x, self.y))
 
         # fontObj = pygame.font.Font('freesansbold.ttf', 15)
@@ -112,7 +112,7 @@ def draw_window():
             animation_zombie = 0
 
     for sh in shots:
-        sh.draw_shot()
+        sh.draw()
 
     for skelet in skeletons:
         skelet.draw(animation_skeleton, 10, SKELETON_LEFT)
@@ -158,17 +158,17 @@ def exit_the_game(run):
     return run
 
 
-def killing_monsters(monsters, shots, damage, *args):
+def killing_monsters(monsters, damage, *args):
     global total_killed, zobmie_killed
     for monster in monsters:
         for shot in shots:
             if monster.x + args[0] == shot.shot_x or monster.x + args[1] == shot.shot_x:
                 monster.hp -= 50
-                shots.pop(shots.index(shot))
+                shots.remove(shot)
                 if monster.width > 0:
                     monster.width -= damage
         if monster.hp <= 0:
-            monsters.pop(monsters.index(monster))
+            monsters.remove(monster)
             total_killed += 1
             zobmie_killed += 1
 
@@ -216,15 +216,15 @@ while run:
             if 450 > shot.shot_x > 1:
                 shot.shot_x += shot.vel
             else:
-                shots.pop(shots.index(shot))
+                shots.remove(shot)
 
         for zombie in zombies:
             if zombie.x < 450:
                 zombie.x += 1
             else:
-                zombies.pop(zombies.index(zombie))
+                zombies.remove(zombie)
             if zombie.x == 100:
-                Zombie = Monster(round(x1), round(200), 100, 40, 3)
+                Zombie = Monster(round(x1), round(200), 100, 40, 4)
                 zombies.append(Zombie)
             if zombie.x == x:
                 damage = True
@@ -232,17 +232,14 @@ while run:
                 width -= 10
             if zombie.x == x + 10 or zombie.x == x + 9 or zombie.x == x + 8:
                 damage = False
-            if width == 0 and GG_xp <= 0:
-                pygame.mixer.music.stop()
-                start_game = False
 
         for skeleton in skeletons:
             if skeleton.x > 1:
                 skeleton.x -= 1
             else:
-                skeletons.pop(skeletons.index(skeleton))
+                skeletons.remove(skeleton)
             if skeleton.x == 250:
-                Skeleton = Monster(round(470), round(195), 200, 80, 3)
+                Skeleton = Monster(round(470), round(195), 200, 80, 4)
                 skeletons.append(Skeleton)
             if skeleton.x == x + 10:
                 damage = True
@@ -250,12 +247,13 @@ while run:
                 width -= 20
             if skeleton.x == x or skeleton.x == x - 1 or skeleton.x == x - 2:
                 damage = False
-            if width <= 0 and GG_xp <= 0:
-                pygame.mixer.music.stop()
-                start_game = False
 
-        killing_monsters(zombies, shots, 20, 30, 29)
-        killing_monsters(skeletons, shots, 25, 0, 1)
+        if width <= 0 and GG_xp <= 0:
+            pygame.mixer.music.stop()
+            start_game = False
+
+        killing_monsters(zombies, 20, 30, 29)
+        killing_monsters(skeletons, 25, 0, 1)
 
         if total_killed % 10 == 9 and not coin:
             if gift_y < -50:
@@ -272,14 +270,14 @@ while run:
         if coin:
             coin_x = gift_x + 25
             coin_y = 260
-            if coin_x == x or coin_x == x + 1:
+            if coin_x == x or coin_x == x + 1 or coin_x == x -1 or coin_x == x + 2 or coin_x == x - 2:
                 coin = False
                 money += 1
 
         if len(zombies) < 1:
-                zombies.append(Monster(round(x1), round(200), 100, 40, 3))
+                zombies.append(Monster(round(x1), round(200), 100, 40, 4))
         if len(skeletons) < 1:
-            skeletons.append(Monster(round(470), round(195), 200, 80, 3))
+            skeletons.append(Monster(round(470), round(195), 200, 80, 4))
 
         keys = pygame.key.get_pressed()
 
@@ -297,15 +295,12 @@ while run:
 
         elif keys[pygame.K_SPACE]:
             shooting = True
-            if k == 1:
-                facing = 1
-            else:
-                facing = -1
+            facing = 1 if k == 1 else -1
             if len(shots) < 10:
                 if k == 1:
-                    shots.append(Shot(round(x + 45), round(y + 22), 3, (255, 0, 0), facing))
+                    shots.append(Shot(round(x + 45), round(y + 22), 4, (255, 0, 155), facing))
                 else:
-                    shots.append(Shot(round(x + 10), round(y + 22), 3, (255, 0, 0), facing))
+                    shots.append(Shot(round(x + 10), round(y + 22), 4, (255, 0, 155), facing))
         else:
             left = False
             right = False
