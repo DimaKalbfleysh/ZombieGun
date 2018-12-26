@@ -1,5 +1,7 @@
 import pygame
-import random
+from random import randrange
+
+from monsters import Monster
 from sprite import SKELETON_LEFT
 from sprite import ZOMBIE_LVL_1
 from sprite import MAIN_MENU
@@ -14,7 +16,7 @@ from sprite import DAMAGE_GG
 from sprite import STAND_GG
 from sprite import GIFT
 from sprite import COIN
-from vars import y
+from vars import y, clock
 from vars import x1
 from vars import x
 from vars import start_game
@@ -22,16 +24,15 @@ from vars import width
 from vars import GG_xp
 from vars import coin
 from vars import gift
-from vars import left_or_right
-from vars import speed
+from vars import position
+from vars import speed, run, skeletons, zombies, shots, gift_y, gift_x, money
 from vars import animation_gg
 from vars import animation_zombie
 from vars import animation_skeleton
 
-pygame.init()
 win = pygame.display.set_mode((450, 280))
+pygame.init()
 pygame.display.set_caption("Zombie Gun")
-clock = pygame.time.Clock()
 
 
 class Shot:
@@ -47,25 +48,6 @@ class Shot:
         pygame.draw.circle(win, self.color, (self.shot_x, self.shot_y), self.radius)
 
 
-class Monster:
-    def __init__(self, x, y, hp, width_hp, height):
-        self.x = x
-        self.y = y
-        self.hp = hp
-        self.width = width_hp
-        self.height = height
-
-    def draw(self, animation, fps, sprites):
-        pygame.draw.rect(win, (0, 0, 255), (self.x - 15, self.y, self.width, self.height))
-        win.blit(sprites[animation // fps], (self.x, self.y))
-
-        # fontObj = pygame.font.Font('freesansbold.ttf', 15)
-        # textSurfaceObj = fontObj.render('lvl' + str(level), True, (128, 128, 128))
-        # textRectObj = textSurfaceObj.get_rect()
-        # textRectObj.center = (self.x + 23, self.y - 15)
-        # win.blit(textSurfaceObj, textRectObj)
-
-
 def draw_window():
     global animation_gg, animation_zombie, animation_skeleton
     win.blit(BG, (0, 0))
@@ -76,27 +58,15 @@ def draw_window():
     if left:
         win.blit(GG_LEFT[animation_gg // 8], (x, y))
         animation_gg += 1
-
     elif right:
         win.blit(GG_RIGHT[animation_gg // 8], (x, y))
         animation_gg += 1
-
     elif shooting:
-        if left_or_right == 'left':
-            win.blit(SHOOTING[0], (x, y))
-        else:
-            win.blit(SHOOTING[1], (x, y))
+        win.blit(SHOOTING[position], (x, y))
     elif damage:
-        if left_or_right == 'left':
-            win.blit(DAMAGE_GG[0], (x, y))
-        else:
-            win.blit(DAMAGE_GG[1], (x, y))
-
+        win.blit(DAMAGE_GG[position], (x, y))
     else:
-        if left_or_right == 'left':
-            win.blit(STAND_GG[0], (x, y))
-        else:
-            win.blit(STAND_GG[1], (x, y))
+        win.blit(STAND_GG[position], (x, y))
     if gift:
         win.blit(GIFT, (gift_x, gift_y))
     if coin:
@@ -105,7 +75,7 @@ def draw_window():
     pygame.draw.rect(win, (255, 0, 0), (x, y, width, 3))
 
     for zomb in zombies:
-        zomb.draw(animation_zombie, 20, ZOMBIE_LVL_1)
+        zomb.draw(win,animation_zombie, 20, ZOMBIE_LVL_1)
         animation_zombie += 1
         if animation_zombie + 1 >= 60:
             animation_zombie = 0
@@ -114,7 +84,7 @@ def draw_window():
         sh.draw()
 
     for skelet in skeletons:
-        skelet.draw(animation_skeleton, 10, SKELETON_LEFT)
+        skelet.draw(win, animation_skeleton, 10, SKELETON_LEFT)
         animation_skeleton += 1
         if animation_skeleton + 1 >= 30:
             animation_skeleton = 0
@@ -139,15 +109,6 @@ def draw_game():
     if start_game:
         draw_window()
     pygame.display.update()
-
-
-money = 0
-shots = []
-zombies = []
-skeletons = []
-run = True
-gift_y = -100
-gift_x = random.randrange(0, 400)
 
 
 def exit_the_game(run):
@@ -177,6 +138,7 @@ def start_music():
     pygame.mixer.music.load("documents/XXXTentacion - Look at Me (minus).mp3")
     pygame.mixer.music.play(-1)
 
+
 But1 = pygame.draw.rect(win, (0, 0, 0), (135, 60, 180, 18))
 while run:
     clock.tick(120)
@@ -204,7 +166,7 @@ while run:
         total_killed = 0
         zobmie_killed = 0
         skeletons_killed = 0
-        gift_x = random.randrange(0, 400)
+        gift_x = randrange(20, 400)
         gift_y = 0
         start_music()
         coin_x = gift_x + 25
@@ -213,7 +175,7 @@ while run:
 
     if start_game:
         if not zombies:
-            Zombie = Monster(round(x1), round(200), 100, 40, 4)
+            Zombie = Monster(round(x1), round(200), 150, 60, 4)
             zombies.append(Zombie)
         if not skeletons:
             Skeleton = Monster(round(470), round(195), 200, 80, 4)
@@ -226,19 +188,11 @@ while run:
                 shots.remove(shot)
 
         for zombie in zombies:
-            if zombie.x < 450:
-                zombie.x += 1
-            else:
-                zombies.remove(zombie)
+            zombie.monster_movement(zombies)
+            zombie.blow()
             if zombie.x == 100:
-                Zombie = Monster(round(x1), round(200), 100, 40, 4)
+                Zombie = Monster(round(x1), round(200), 150, 60, 4)
                 zombies.append(Zombie)
-            if zombie.x == x:
-                damage = True
-                GG_xp -= 25
-                width -= 10
-            if zombie.x == x + 10 or zombie.x == x + 9 or zombie.x == x + 8:
-                damage = False
 
         for skeleton in skeletons:
             if skeleton.x > 1:
@@ -263,10 +217,10 @@ while run:
         killing_monsters(zombies, 20, 30, 29)
         killing_monsters(skeletons, 25, 0, 1)
 
-        if total_killed % 10 == 9 and not coin:
+        if total_killed % 10 == 0 and total_killed // 10 != 0 and not coin:
             gift = True
             if gift_y < -50:
-                gift_x = random.randrange(0, 400)
+                gift_x = randrange(20, 400)
 
         if gift:
             if gift_y < 230:
@@ -278,32 +232,31 @@ while run:
         if coin:
             coin_x = gift_x + 25
             coin_y = 260
-            if coin_x == x or coin_x == x + 1 or coin_x == x - 1 or coin_x == x + 2 or coin_x == x - 2:
+            if coin_x == x or coin_x == x + 1:
                 coin = False
                 money += 1
 
         keys = pygame.key.get_pressed()
-
         if keys[pygame.K_LEFT] and x > 1:
-            left_or_right = 'left'
+            position = 0
             x -= speed
             left = True
             right = False
 
         elif keys[pygame.K_RIGHT] and x < 420:
-            left_or_right = 'right'
+            position = 1
             x += speed
             left = False
             right = True
 
         elif keys[pygame.K_SPACE]:
             shooting = True
-            facing = 1 if left_or_right == 'right' else -1
             if len(shots) < 10:
-                if left_or_right == 'right':
-                    shots.append(Shot(round(x + 45), round(y + 22), 4, (255, 0, 155), facing))
+                if position == 1:
+                    shot = Shot(round(x + 45), round(y + 22), 4, (255, 0, 155), 1)
                 else:
-                    shots.append(Shot(round(x + 10), round(y + 22), 4, (255, 0, 155), facing))
+                    shot = Shot(round(x + 10), round(y + 22), 4, (255, 0, 155), -1)
+                shots.append(shot)
         else:
             left = False
             right = False
