@@ -22,7 +22,7 @@ from vars import width
 from vars import GG_xp
 from vars import coin
 from vars import gift
-from vars import k
+from vars import left_or_right
 from vars import speed
 from vars import animation_gg
 from vars import animation_zombie
@@ -32,7 +32,6 @@ pygame.init()
 win = pygame.display.set_mode((450, 280))
 pygame.display.set_caption("Zombie Gun")
 clock = pygame.time.Clock()
-But1 = pygame.draw.rect(win, (0, 0, 0), (135, 60, 180, 18))
 
 
 class Shot:
@@ -83,18 +82,18 @@ def draw_window():
         animation_gg += 1
 
     elif shooting:
-        if k == -1:
+        if left_or_right == 'left':
             win.blit(SHOOTING[0], (x, y))
         else:
             win.blit(SHOOTING[1], (x, y))
     elif damage:
-        if k == -1:
+        if left_or_right == 'left':
             win.blit(DAMAGE_GG[0], (x, y))
         else:
             win.blit(DAMAGE_GG[1], (x, y))
 
     else:
-        if k == -1:
+        if left_or_right == 'left':
             win.blit(STAND_GG[0], (x, y))
         else:
             win.blit(STAND_GG[1], (x, y))
@@ -178,7 +177,7 @@ def start_music():
     pygame.mixer.music.load("documents/XXXTentacion - Look at Me (minus).mp3")
     pygame.mixer.music.play(-1)
 
-
+But1 = pygame.draw.rect(win, (0, 0, 0), (135, 60, 180, 18))
 while run:
     clock.tick(120)
     pos = pygame.mouse.get_pos()
@@ -191,6 +190,7 @@ while run:
     pos = pygame.mouse.get_pos()
     pressed1, pressed2, pressed3 = pygame.mouse.get_pressed()
     if But1.collidepoint(pos) and pressed1:
+        But1 = pygame.draw.rect(win, (0, 0, 0), (0, 0, 0, 0))
         start_game = True
         width = 40
         GG_xp = 100
@@ -212,6 +212,13 @@ while run:
         money = 0
 
     if start_game:
+        if not zombies:
+            Zombie = Monster(round(x1), round(200), 100, 40, 4)
+            zombies.append(Zombie)
+        if not skeletons:
+            Skeleton = Monster(round(470), round(195), 200, 80, 4)
+            skeletons.append(Skeleton)
+
         for shot in shots:
             if 450 > shot.shot_x > 1:
                 shot.shot_x += shot.vel
@@ -251,14 +258,15 @@ while run:
         if width <= 0 and GG_xp <= 0:
             pygame.mixer.music.stop()
             start_game = False
+            But1 = pygame.draw.rect(win, (0, 0, 0), (135, 60, 180, 18))
 
         killing_monsters(zombies, 20, 30, 29)
         killing_monsters(skeletons, 25, 0, 1)
 
         if total_killed % 10 == 9 and not coin:
+            gift = True
             if gift_y < -50:
                 gift_x = random.randrange(0, 400)
-            gift = True
 
         if gift:
             if gift_y < 230:
@@ -270,34 +278,29 @@ while run:
         if coin:
             coin_x = gift_x + 25
             coin_y = 260
-            if coin_x == x or coin_x == x + 1 or coin_x == x -1 or coin_x == x + 2 or coin_x == x - 2:
+            if coin_x == x or coin_x == x + 1 or coin_x == x - 1 or coin_x == x + 2 or coin_x == x - 2:
                 coin = False
                 money += 1
-
-        if len(zombies) < 1:
-                zombies.append(Monster(round(x1), round(200), 100, 40, 4))
-        if len(skeletons) < 1:
-            skeletons.append(Monster(round(470), round(195), 200, 80, 4))
 
         keys = pygame.key.get_pressed()
 
         if keys[pygame.K_LEFT] and x > 1:
-            k = -1
+            left_or_right = 'left'
             x -= speed
             left = True
             right = False
 
         elif keys[pygame.K_RIGHT] and x < 420:
-            k = 1
+            left_or_right = 'right'
             x += speed
             left = False
             right = True
 
         elif keys[pygame.K_SPACE]:
             shooting = True
-            facing = 1 if k == 1 else -1
+            facing = 1 if left_or_right == 'right' else -1
             if len(shots) < 10:
-                if k == 1:
+                if left_or_right == 'right':
                     shots.append(Shot(round(x + 45), round(y + 22), 4, (255, 0, 155), facing))
                 else:
                     shots.append(Shot(round(x + 10), round(y + 22), 4, (255, 0, 155), facing))
