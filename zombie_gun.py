@@ -1,7 +1,7 @@
 import pygame
 from GG import GG
 from monster import Monster
-from sprite import SKELETON_LEFT
+from sprite import SKELETON_LEFT, MAIN_MENU_START_GAME, MAIN_MENU
 from sprite import ZOMBIE_LVL_1
 from sprite import BG
 from sprite import SKULL
@@ -18,17 +18,20 @@ gg = GG(win)
 
 
 def draw_game():
+    win.blit(MAIN_MENU, (0, 0))
+    if button:
+        win.blit(MAIN_MENU_START_GAME, (0, 0))
     if start_game:
         win.blit(BG, (0, 0))
         win.blit(SKULL, (0, 0))
         win.blit(COIN_1, (60, 0))
         pygame.draw.rect(win, (255, 0, 0), (gg.x, gg.y, gg.width_hp_gg, 3))
         for zomb in zombies:
-            zomb.draw(win, 20, ZOMBIE_LVL_1)
+            zomb.draw()
         for sh in shots:
             sh.draw(win)
         for skelet in skeletons:
-            skelet.draw(win, 10, SKELETON_LEFT)
+            skelet.draw()
         amount_money_or_total_killed(total_killed, 40, 15)
         amount_money_or_total_killed(money, 100, 15)
     pygame.display.update()
@@ -76,9 +79,9 @@ while run:
     clock.tick(120)
     pos = pygame.mouse.get_pos()
     if button_start_game.collidepoint(pos):
-        window.draw_start_button()
-    elif not start_game:
-        window.draw_main_menu()
+        button = True
+    else:
+        button = False
 
     pos = pygame.mouse.get_pos()
     pressed1, pressed2, pressed3 = pygame.mouse.get_pressed()
@@ -95,14 +98,16 @@ while run:
         start_music()
         money = 0
 
+    coordinates_zombie = [round(-20), round(200)]
+    Zombie = Monster(win, coordinates_zombie, 150, 60, 20, ZOMBIE_LVL_1, 25, gg)
+
+    coordinates_skeleton = [round(470), round(195)]
+    Skeleton = Monster(win, coordinates_skeleton, 200, 80, 10, SKELETON_LEFT, 50, gg)
+
     if start_game:
         if not zombies:
-            coordinates_zombie = [round(-20), round(200)]
-            Zombie = Monster(coordinates_zombie, 150, 60)
             zombies.append(Zombie)
         if not skeletons:
-            coordinates_skeleton = [round(470), round(195)]
-            Skeleton = Monster(coordinates_skeleton, 200, 80)
             skeletons.append(Skeleton)
 
         for shot in shots:
@@ -110,18 +115,16 @@ while run:
 
         for zombie in zombies:
             zombie.monster_movement(zombies, True)
-            zombie.blow(gg, 25)
+            if zombie.x == zombie.gg.x:
+                zombie.blow()
             if zombie.x == 100:
-                coordinates_zombie = [round(-20), round(200)]
-                Zombie = Monster(coordinates_zombie, 150, 60)
                 zombies.append(Zombie)
 
         for skeleton in skeletons:
             skeleton.monster_movement(skeletons, False)
-            skeleton.blow(gg, 50)
+            if skeleton.x == skeleton.gg.x:
+                skeleton.blow()
             if skeleton.x == 250:
-                coordinates_skeleton = [round(470), round(195)]
-                Skeleton = Monster(coordinates_skeleton, 200, 80)
                 skeletons.append(Skeleton)
 
         killing_monsters(zombies, 20, 30, 29)
