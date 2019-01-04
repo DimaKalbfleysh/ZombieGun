@@ -1,10 +1,11 @@
 import pygame
 
-from shot import Shot
+from shell import Shell
 from sprite import SHOOTING, STAND_GG
 
 
 class Hero:
+    """ Класс отвечает за поведение героя """
     def __init__(self, win):
         self.win = win
         self.hp = 100
@@ -33,17 +34,17 @@ class Hero:
         if self.width_hp <= 0 and self.hp <= 0:
             self.death = True
 
-    def shooting(self, shots):
-        """ Метод создаёт пули """
-        if len(shots) < 10:
+    def shooting(self, shells):
+        """ Метод отвечает за поведение снаряда """
+        if len(shells) < 10:
             if self.position:
-                coordinates_shot = [round(self.x + 45), round(self.y + 22)]
-                shot = Shot(coordinates_shot, 1)
+                coordinates_shell = [round(self.x + 45), round(self.y + 22)]
+                shell = Shell(coordinates_shell, 1)
             else:
-                coordinates_shot = [round(self.x + 10), round(self.y + 22)]
-                shot = Shot(coordinates_shot, -1)
-            shots.append(shot)
-        return shots
+                coordinates_shell = [round(self.x + 10), round(self.y + 22)]
+                shell = Shell(coordinates_shell, -1)
+            shells.append(shell)
+        return shells
 
     def draw_shooting(self):
         """ Метод отображает стреляющего героя """

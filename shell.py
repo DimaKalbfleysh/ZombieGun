@@ -1,7 +1,7 @@
 import pygame
 
 
-class Shot:
+class Shell:
     def __init__(self, coordinates, facing):
         self.x = coordinates[0]
         self.y = coordinates[1]
@@ -13,8 +13,8 @@ class Shot:
     def draw(self, win):
         pygame.draw.circle(win, self.color, (self.x, self.y), self.radius)
 
-    def move(self, shots):
+    def move(self, shells):
         if 450 > self.x > 1:
             self.x += self.vel
         else:
-            shots.remove(self)
+            shells.remove(self)

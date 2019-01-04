@@ -1,14 +1,8 @@
 import pygame
 from hero import Hero
-from monster import Zombie, Skeleton
-from sprite import SKELETON_LEFT, MAIN_MENU_START_GAME, MAIN_MENU, GG_LEFT, GG_RIGHT
-from sprite import ZOMBIE_LVL_1
-from sprite import BG
-from sprite import SKULL
-from sprite import COIN_1
-from vars import clock
-from vars import start_game
-from vars import run, skeletons, zombies, shots, money
+from monster import *
+from sprite import *
+from vars import *
 from window import Window
 
 win = pygame.display.set_mode((450, 280))
@@ -29,12 +23,12 @@ def draw_game():
         pygame.draw.rect(win, (255, 0, 0), (hero.x, hero.y, hero.width_hp, 3))
         for zomb in zombies:
             zomb.draw()
-        for sh in shots:
+        for sh in shells:
             sh.draw(win)
         for skelet in skeletons:
             skelet.draw()
-        draw_amount_money_or_total_killed(total_killed, 40, 15)
-        draw_amount_money_or_total_killed(money, 100, 15)
+        draw_amount_money_or_total_killed(total_killed, 40, 18)
+        draw_amount_money_or_total_killed(money, 100, 18)
     pygame.display.flip()
 
 
@@ -49,10 +43,10 @@ def draw_amount_money_or_total_killed(amount, x, y):
 def killing_monsters(monsters, damage, *args):
     global total_killed
     for monster in monsters:
-        for shot in shots:
-            if monster.x + args[0] == shot.x or monster.x + args[1] == shot.x:
+        for sh in shells:
+            if monster.x + args[0] == sh.x or monster.x + args[1] == sh.x:
                 monster.hp -= 50
-                shots.remove(shot)
+                shells.remove(sh)
                 if monster.width_hp > 0:
                     monster.width_hp -= damage
         if monster.hp <= 0:
@@ -77,13 +71,13 @@ while run:
         start_game = True
         zombies = []
         skeletons = []
-        shots = []
+        shells = []
         total_killed = 0
         window.start_music()
         money = 0
 
     coordinates_zombie = [round(-20), round(200)]
-    zombie_ = Zombie(win, coordinates_zombie, ZOMBIE_LVL_1, 150, 20, 25, hero, 1)
+    zombie_ = Zombie(win, coordinates_zombie, ZOMBIE_LVL_1, 150, 10, 25, hero, 1)
 
     coordinates_skeleton = [round(470), round(195)]
     skeleton_ = Skeleton(win, coordinates_skeleton, SKELETON_LEFT, 200, 10, 50, hero, -1)
@@ -94,8 +88,8 @@ while run:
         if not skeletons:
             skeletons.append(skeleton_)
 
-        for shot in shots:
-            shot.move(shots)
+        for shell in shells:
+            shell.move(shells)
 
         for zombie in zombies:
             zombie.move(zombies)
@@ -127,14 +121,13 @@ while run:
             hero.draw_walking(GG_RIGHT)
 
         elif keys[pygame.K_SPACE]:
-            shots = hero.shooting(shots)
+            shells = hero.shooting(shells)
             hero.draw_shooting()
         else:
             hero.draw_standing()
 
     window.stop_music()
     draw_game()
-
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             run = False
