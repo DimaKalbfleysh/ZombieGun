@@ -1,4 +1,5 @@
 import pygame
+from bonus import Coin
 from hero import Hero
 from monster import *
 from sprite import *
@@ -94,6 +95,15 @@ while game.run:
                 skeleton.blow()
             if skeleton.x == 300:
                 game.skeletons.append(skeleton_)
+
+        if game.total_killed % 10 == 0 and game.total_killed // 10 != 0 and len(game.coins) < 1:
+            bonus_ = Coin(win, COIN, hero, game)
+            game.coins.append(bonus_)
+
+        for coin in game.coins:
+            coin.draw_gift()
+            coin.gift_movement()
+            coin.take_bonus()
 
         killing_monsters(game.zombies, 20, 30, 29)
         killing_monsters(game.skeletons, 25, 0, 1)

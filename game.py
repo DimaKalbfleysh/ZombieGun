@@ -13,6 +13,7 @@ class Game:
         self.main_character = None
         self.clock = pygame.time.Clock()
         self.button_start_game = pygame.draw.rect(self.win, (0, 0, 0), (135, 60, 180, 18))
+        self.coins = []
         self.shells = []
         self.zombies = []
         self.skeletons = []
