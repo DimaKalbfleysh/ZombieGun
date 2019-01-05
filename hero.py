@@ -1,5 +1,4 @@
 import pygame
-
 from shell import Shell
 from sprite import SHOOTING, STAND_GG
 
