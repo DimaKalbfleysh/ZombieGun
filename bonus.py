@@ -38,6 +38,3 @@ class Coin(Bonus):
         if self.bonus_x == self.hero.x or self.bonus_x == self.hero.x + 1:
             self.game.money += 1
             self.game.coins.remove(self)
-
-
-

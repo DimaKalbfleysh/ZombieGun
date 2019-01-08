@@ -5,10 +5,9 @@ from monster import *
 from sprite import *
 from game import Game
 
-game = Game()
-win = game.win
+win = pygame.display.set_mode((450, 280))
 hero = Hero(win)
-game.main_character = hero
+game = Game(win, hero)
 
 
 def draw_game():
@@ -55,7 +54,7 @@ def killing_monsters(monsters, damage, *args):
 coordinates_skeleton = [round(470), round(195)]
 coordinates_zombie = [round(-20), round(200)]
 while game.run:
-    game.clock.tick(60)
+    game.clock.tick(120)
     pos = pygame.mouse.get_pos()
     pressed1, _, _ = pygame.mouse.get_pressed()
     if game.button_start_game.collidepoint(pos):
@@ -65,13 +64,12 @@ while game.run:
 
     if game.button_start_game.collidepoint(pos) and pressed1:
         hero = Hero(win)
-        game = Game()
-        game.main_character = hero
+        game = Game(win, hero)
         game.start_game = True
         game.start_music()
 
-    zombie_ = Zombie(win, coordinates_zombie, ZOMBIE_LVL_1, 150, 10, 25, hero, 1)
-    skeleton_ = Skeleton(win, coordinates_skeleton, SKELETON_LEFT, 200, 10, 50, hero, -1)
+    zombie_ = Zombie(win, coordinates_zombie, ZOMBIE_LVL_1, 150, 10, 25, hero, game)
+    skeleton_ = Skeleton(win, coordinates_skeleton, SKELETON_LEFT, 200, 10, 50, hero, game)
 
     if game.start_game:
         if not game.zombies:
@@ -83,15 +81,17 @@ while game.run:
             shell.move(game.shells)
 
         for zombie in game.zombies:
-            zombie.move(game.zombies)
-            if zombie.x == zombie.main_character.x:
+            zombie.move()
+            zombie.death()
+            if zombie.x == zombie.hero.x:
                 zombie.blow()
             if zombie.x == 100:
                 game.zombies.append(zombie_)
 
         for skeleton in game.skeletons:
-            skeleton.move(game.skeletons)
-            if skeleton.x == skeleton.main_character.x:
+            skeleton.move()
+            skeleton.death()
+            if skeleton.x == skeleton.hero.x:
                 skeleton.blow()
             if skeleton.x == 300:
                 game.skeletons.append(skeleton_)
@@ -105,7 +105,7 @@ while game.run:
             coin.gift_movement()
             coin.take_bonus()
 
-        killing_monsters(game.zombies, 20, 30, 29)
+        killing_monsters(game.zombies, 25, 30, 29)
         killing_monsters(game.skeletons, 25, 0, 1)
         hero.is_death()
         game.get_start_game()

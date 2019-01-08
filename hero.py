@@ -14,6 +14,7 @@ class Hero:
         self.y = 210
         self.x = 226
         self.death = False
+        self.damage = 25
 
     def move(self, step, position):
         """ Метод передвигает героя """
