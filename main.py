@@ -104,7 +104,6 @@ while game.run:
             coin.draw_gift()
             coin.gift_movement()
             coin.take_bonus()
-
         killing_monsters(game.zombies, 25, 30, 29)
         killing_monsters(game.skeletons, 25, 0, 1)
         hero.is_death()
@@ -126,8 +125,10 @@ while game.run:
         else:
             hero.draw_standing()
 
-    game.stop_music()
-    game.stop_game()
+    if hero.death:
+        game.stop_music()
+
+    game.out_of_game()
     draw_game()
 
 pygame.quit()

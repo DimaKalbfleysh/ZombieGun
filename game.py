@@ -2,6 +2,7 @@ import pygame
 
 
 class Game:
+    """ The class is responsible for all thr logic of the game window. """
     def __init__(self, win, hero):
         pygame.init()
         pygame.display.set_caption("Zombie Gun")
@@ -29,15 +30,17 @@ class Game:
         self.start_game = not self.hero.death
 
     def stop_music(self):
-        if self.hero.death:
-            pygame.mixer.music.stop()
+        """ The method stop music. """
+        pygame.mixer.music.stop()
 
     def start_music(self):
+        """ The method start music. """
         pygame.mixer.init()
         pygame.mixer.music.load("documents/XXXTentacion - Look at Me (minus).mp3")
         pygame.mixer.music.play(-1)
 
-    def stop_game(self):
+    def out_of_game(self):
+        """ The method out of game """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.run = False

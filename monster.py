@@ -2,7 +2,7 @@ import pygame
 
 
 class Monster:
-    """ Класс отвечает за поведение монстра """
+    """ The class is responsible for the behavior of the monster. """
     monsters = None
     step = None
     height_hp = 4
@@ -21,7 +21,7 @@ class Monster:
         self.game = game
 
     def draw(self):
-        """ Метод отображает идущего монстра """
+        """ The method displays the walking monster. """
         if self.animation + 1 >= self.fps * 3:
             self.animation = 0
         pygame.draw.rect(self.win, (0, 0, 255), (self.x - 15, self.y, self.width_hp, self.height_hp))
@@ -35,17 +35,18 @@ class Monster:
 
     def move(self):
         """
-        Метод отвечает за передвижение монстра,
-        всю логику вы должны переопределить.
+        The method is responsible for the movement of the monster,
+        all the logic of the movement you have to redefine.
         """
         pass
 
     def blow(self):
-        """ Монстр наносит удар по герою """
+        """ The method responsible for dealing damage to the hero. """
         self.hero.hp -= self.damage
         self.hero.width_hp -= self.damage / 2.5
 
     def death(self):
+        """ The method is responsible for the death of the monster. """
         for sh in self.game.shells:
             if self.x == sh.x:
                 self.hp -= 50
@@ -59,7 +60,7 @@ class Monster:
 
 class Zombie(Monster):
     def move(self):
-        """ Метод двигает зомби вправо """
+        """ The method moves the zombie to the right. """
         self.step = 1
         self.monsters = self.game.zombies
         if self.x < 450:
@@ -70,7 +71,7 @@ class Zombie(Monster):
 
 class Skeleton(Monster):
     def move(self):
-        """ Метод двигает скелета влево """
+        """ The method moves the skeleton to the left. """
         self.step = -1
         self.monsters = self.game.skeletons
         if 1 < self.x:

@@ -1,4 +1,4 @@
-from pygame import  image
+from pygame import image
 
 DAMAGE_GG = [image.load('documents/image/damageGG_left.png'),
              image.load('documents/image/damageGG_right.png')]
